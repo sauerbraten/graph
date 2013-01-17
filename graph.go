@@ -26,18 +26,18 @@ func (v *Vertex) GetNeighbors() []*Vertex {
 
 // The graph
 type Graph struct {
-	Vertexes map[string]Vertex // A map of all the vertexes in this graph, indexed by their key.
+	Vertexes map[string]*Vertex // A map of all the vertexes in this graph, indexed by their key.
 }
 
 // Initializes a new graph.
 func New() *Graph {
-	return &Graph{make(map[string]Vertex)}
+	return &Graph{make(map[string]*Vertex)}
 }
 
 // Sets the value of the vertex with the specified key.
 func (g *Graph) Set(key string, value interface{}) {
 	v := &Vertex{make(map[*Vertex]*edge), value}
-	g.Vertexes[key] = *v
+	g.Vertexes[key] = v
 }
 
 // Deletes the vertex with the specified key.
@@ -70,8 +70,7 @@ func (g *Graph) Delete(key string) bool {
 
 // Returns the vertex with this key, or nil if there is no vertex with this key.
 func (g *Graph) Get(key string) *Vertex {
-	v := g.Vertexes[key]
-	return &v
+	return g.Vertexes[key]
 }
 
 // Creates an edge between the vertexes specified by the keys. Returns false if one or both of the keys are invalid or if they are the same.

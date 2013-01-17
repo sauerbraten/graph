@@ -60,9 +60,9 @@ func ExampleGraph() {
 	printVertexes(g.Vertexes)
 }
 
-func printVertexes(vSlice map[string]Vertex) {
+func printVertexes(vSlice map[string]*Vertex) {
 	for _, v := range vSlice {
-		fmt.Printf("%v\n", &v.value)
+		fmt.Printf("%v\n", v.value)
 		for otherV, _ := range v.edges {
 			fmt.Printf("  → %v\n", otherV.value)
 		}
