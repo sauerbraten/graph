@@ -52,12 +52,12 @@ func ExampleGraph() {
 	g.Connect("2", "3", 9)
 	g.Connect("4", "2", 3)
 
-	printVertexes(g.Vertexes)
+	printVertexes(g.vertexes)
 	fmt.Println(" - - - - - - ")
 
 	g.Delete("1")
 
-	printVertexes(g.Vertexes)
+	printVertexes(g.vertexes)
 }
 
 func printVertexes(vSlice map[string]*Vertex) {
