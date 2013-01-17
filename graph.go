@@ -17,12 +17,12 @@ type Vertex struct {
 	sync.RWMutex
 }
 
-// Returns all adjacent vertexes as a slice, which may be empty.
-func (v *Vertex) GetNeighbors() []*Vertex {
-	neighbors := []*Vertex{}
+// Returns all adjacent vertexes and the respective edge's value as a slice, which may be empty.
+func (v *Vertex) GetNeighbors() []Neighbor {
+	neighbors := []Neighbor{}
 
-	for k, _ := range v.edges {
-		neighbors = append(neighbors, k)
+	for otherV, e := range v.edges {
+		neighbors = append(neighbors, Neighbor{otherV, e.value})
 	}
 
 	return neighbors
@@ -35,6 +35,12 @@ func (v *Vertex) Value() interface{} {
 	v.RUnlock()
 
 	return value
+}
+
+// A Neighbor consists of a neighboring vertex and an edge value. This is not the value of the neighbouring vertex, but the value of the connection to it!
+type Neighbor struct {
+	V         *Vertex
+	EdgeValue int
 }
 
 type Graph struct {
