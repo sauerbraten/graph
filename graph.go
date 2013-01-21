@@ -19,9 +19,17 @@ type Vertex struct {
 
 // Returns all adjacent vertexes and the respective edge's value as a slice, which may be empty.
 func (v *Vertex) GetNeighbors() []Neighbor {
+	if v == nil {
+		return nil
+	}
+
 	neighbors := []Neighbor{}
 
-	for otherV, e := range v.edges {
+	v.RLock()
+	edges := v.edges
+	v.RUnlock()
+
+	for otherV, e := range edges {
 		neighbors = append(neighbors, Neighbor{otherV, e.value})
 	}
 
@@ -30,6 +38,10 @@ func (v *Vertex) GetNeighbors() []Neighbor {
 
 // Returns the Vertexes value.
 func (v *Vertex) Value() interface{} {
+	if v == nil {
+		return nil
+	}
+
 	v.RLock()
 	value := v.value
 	v.RUnlock()
