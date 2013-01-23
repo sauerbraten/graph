@@ -6,10 +6,6 @@ import (
 	"errors"
 )
 
-type vertexGob struct {
-	value interface{}
-}
-
 type graphGob struct {
 	inv      map[*Vertex]string
 	Vertexes map[string]interface{}
