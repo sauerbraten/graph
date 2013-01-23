@@ -12,8 +12,8 @@ type edge struct {
 }
 
 type Vertex struct {
-	edges map[*Vertex]*edge
-	value interface{}
+	edges map[*Vertex]*edge // maps the neighbor node to the edge connecting this node to it
+	value interface{}       // the vertex stored value
 	sync.RWMutex
 }
 
