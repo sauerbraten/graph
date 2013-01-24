@@ -57,13 +57,12 @@ type Neighbor struct {
 
 type Graph struct {
 	vertexes map[string]*Vertex // A map of all the vertexes in this graph, indexed by their key.
-	size     int
 	sync.RWMutex
 }
 
 // Initializes a new graph.
 func New() *Graph {
-	return &Graph{make(map[string]*Vertex), 0, sync.RWMutex{}}
+	return &Graph{make(map[string]*Vertex), sync.RWMutex{}}
 }
 
 // Sets the value of the vertex with the specified key.
@@ -82,7 +81,6 @@ func (g *Graph) Set(key string, value interface{}) {
 		// and add it to the graph
 		g.vertexes[key] = v
 
-		g.size++
 		return
 	}
 
@@ -123,8 +121,6 @@ func (g *Graph) Delete(key string) bool {
 
 	// delete vertex
 	delete(g.vertexes, key)
-
-	g.size--
 
 	return true
 }
@@ -214,5 +210,5 @@ func (g *Graph) Disconnect(key string, otherKey string) bool {
 
 // Returns the amount of vertexes contained in the graph.
 func (g *Graph) Len() int {
-	return g.size
+	return len(g.vertexes)
 }
