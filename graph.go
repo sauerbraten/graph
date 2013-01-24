@@ -63,7 +63,7 @@ type Graph struct {
 
 // Initializes a new graph.
 func New() *Graph {
-	return &Graph{make(map[string]*Vertex), sync.RWMutex{}}
+	return &Graph{make(map[string]*Vertex), 0, sync.RWMutex{}}
 }
 
 // Sets the value of the vertex with the specified key.
