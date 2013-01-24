@@ -12,10 +12,9 @@ type graphGob struct {
 	Edges    map[[2]string]int
 }
 
-// adds a key→vertex pair to the graphGob
+// adds a key - vertex pair to the graphGob
 func (g graphGob) add(key string, v *Vertex) {
-	// set the vertex key - value pair
-
+	// set the key - vertex pair
 	g.Vertexes[key] = v.value
 
 	// for each neighbor...

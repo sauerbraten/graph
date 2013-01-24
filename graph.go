@@ -207,3 +207,8 @@ func (g *Graph) Disconnect(key string, otherKey string) bool {
 
 	return true
 }
+
+// Returns the amount of vertexes contained in the graph.
+func (g *Graph) Len() int {
+	return len(g.vertexes)
+}
