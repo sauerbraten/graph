@@ -125,6 +125,19 @@ func (g *Graph) Delete(key string) bool {
 	return true
 }
 
+// Returns a slice containing all vertexes. The slice is empty if the graph contains no nodes.
+func (g *Graph) GetAll() []*Vertex {
+	all := []*Vertex{}
+
+	g.RLock()
+	for _, v := range g.vertexes {
+		all = append(all, v)
+	}
+	g.RUnlock()
+
+	return all
+}
+
 // Returns the vertex with this key, or nil if there is no vertex with this key.
 func (g *Graph) Get(key string) *Vertex {
 	g.RLock()
