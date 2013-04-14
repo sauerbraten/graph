@@ -20,17 +20,17 @@ func TestGraph(t *testing.T) {
 		t.Fail()
 	}
 
-	g.Connect("1", "3", 1)
+	ok = g.Connect("1", "3", 1)
 	if !ok {
 		t.Fail()
 	}
 
-	g.Connect("2", "3", 9)
+	ok = g.Connect("2", "3", 9)
 	if !ok {
 		t.Fail()
 	}
 
-	g.Connect("4", "2", 3)
+	ok = g.Connect("4", "2", 3)
 	if !ok {
 		t.Fail()
 	}
