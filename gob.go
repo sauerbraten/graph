@@ -26,9 +26,7 @@ func (g graphGob) add(key string, v *Vertex) {
 		}
 
 		// save the edge connection to the neighbor into the edges map
-
 		endpoints := [2]string{g.inv[edge.vertexes[0]], g.inv[edge.vertexes[1]]}
-
 		g.Edges[endpoints] = edge.value
 	}
 }
@@ -36,16 +34,12 @@ func (g graphGob) add(key string, v *Vertex) {
 // Encodes the graph into a []byte. With this method, graph implements the gob.GobEncoder interface.
 func (g *Graph) GobEncode() ([]byte, error) {
 	// build inverted map
-
 	inv := map[*Vertex]string{}
-
 	for key, v := range g.vertexes {
 		if _, ok := inv[v]; !ok {
 			inv[v] = key
 		}
 	}
-
-	// make edges and vertexGobs map
 
 	gGob := graphGob{inv, map[string]interface{}{}, map[[2]string]int{}}
 
@@ -55,9 +49,7 @@ func (g *Graph) GobEncode() ([]byte, error) {
 	}
 
 	// encode gGob
-
 	buf := &bytes.Buffer{}
-
 	enc := gob.NewEncoder(buf)
 	err := enc.Encode(gGob)
 
@@ -67,11 +59,8 @@ func (g *Graph) GobEncode() ([]byte, error) {
 // Decodes a []byte into the graphs vertexes and edges. With this method, graph implements the gob.GobDecoder interface.
 func (g *Graph) GobDecode(b []byte) (err error) {
 	// decode into graphGob
-
 	gGob := &graphGob{}
-
 	buf := bytes.NewBuffer(b)
-
 	dec := gob.NewDecoder(buf)
 
 	err = dec.Decode(gGob)
@@ -80,13 +69,11 @@ func (g *Graph) GobDecode(b []byte) (err error) {
 	}
 
 	// set the vertexes
-
 	for key, value := range gGob.Vertexes {
 		g.Set(key, value)
 	}
 
 	// connect the vertexes
-
 	for endpoints, value := range gGob.Edges {
 		if ok := g.Connect(endpoints[0], endpoints[1], value); !ok {
 			return errors.New("invalid edge endpoints")

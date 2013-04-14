@@ -116,7 +116,6 @@ func (g *Graph) Delete(key string) bool {
 		otherV.Lock()
 		delete(otherV.edges, v)
 		otherV.Unlock()
-
 	}
 
 	// delete vertex

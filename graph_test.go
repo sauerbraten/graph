@@ -45,14 +45,12 @@ func ExampleGraph() {
 	g := New()
 
 	// set key → value pairs
-
 	g.Set("1", 123)
 	g.Set("2", 678)
 	g.Set("3", "abc")
 	g.Set("4", "xyz")
 
 	// connect vertexes/nodes
-
 	g.Connect("1", "2", 5)
 	g.Connect("1", "3", 1)
 	g.Connect("2", "3", 9)
@@ -62,15 +60,12 @@ func ExampleGraph() {
 	fmt.Println(" - - - - - - ")
 
 	// delete a node, and all connections to it
-
 	g.Delete("1")
 
 	printVertexes(g.vertexes)
-
 	fmt.Println()
 
 	// test gob encoding and decoding
-
 	buf := &bytes.Buffer{}
 	enc := gob.NewEncoder(buf)
 
@@ -80,7 +75,6 @@ func ExampleGraph() {
 	}
 
 	// now decode into new graph
-
 	dec := gob.NewDecoder(buf)
 	newG := New()
 	err = dec.Decode(newG)
