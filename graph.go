@@ -26,12 +26,10 @@ func (v *Vertex) GetNeighbors() []Neighbor {
 	neighbors := []Neighbor{}
 
 	v.RLock()
-	edges := v.edges
-	v.RUnlock()
-
-	for otherV, e := range edges {
+	for otherV, e := range v.edges {
 		neighbors = append(neighbors, Neighbor{otherV, e.value})
 	}
+	v.RUnlock()
 
 	return neighbors
 }
