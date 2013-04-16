@@ -96,7 +96,7 @@ func TestDelete(t *testing.T) {
 	}
 
 	// preserve a pointer to node "1"
-	one := g.Get("1")
+	one := g.get("1")
 	if one == nil {
 		t.Fail()
 	}
@@ -108,20 +108,20 @@ func TestDelete(t *testing.T) {
 	}
 
 	// make sure it's not in the graph anymore
-	deletedOne := g.Get("1")
+	deletedOne := g.get("1")
 	if deletedOne != nil {
 		t.Fail()
 	}
 
 	// test for orphaned connections
-	neighbors := g.Get("2").GetNeighbors()
+	neighbors := g.get("2").GetNeighbors()
 	for _, n := range neighbors {
 		if n.V == one {
 			t.Fail()
 		}
 	}
 
-	neighbors = g.Get("3").GetNeighbors()
+	neighbors = g.get("3").GetNeighbors()
 	for _, n := range neighbors {
 		if n.V == one {
 			t.Fail()
