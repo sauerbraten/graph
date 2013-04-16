@@ -17,13 +17,13 @@ type Vertex struct {
 	sync.RWMutex
 }
 
-// A Neighbor consists of a neighboring vertex and an edge value. This is not the value of the neighbouring vertex, but the value of the connection to it!
+// A Neighbor consists of a neighboring vertex and an edge weight.
 type Neighbor struct {
 	V          *Vertex
 	EdgeWeight int
 }
 
-// Returns all adjacent vertexes and the respective edge's value as a slice, which may be empty.
+// Returns all adjacent vertexes and the respective edge's weight as a slice, which may be empty.
 func (v *Vertex) GetNeighbors() []Neighbor {
 	if v == nil {
 		return nil
@@ -70,7 +70,7 @@ func (g *Graph) Len() int {
 
 // Sets the value of the vertex with the specified key.
 func (g *Graph) Set(key string, value interface{}) {
-	// lock graph until this method is finished to prevent changes made by other goroutines while this one is looping etc.
+	// lock graph until this method is finished to prevent changes made by other goroutines
 	g.Lock()
 	defer g.Unlock()
 
@@ -153,7 +153,8 @@ func (g *Graph) get(key string) *Vertex {
 }
 
 // Creates an edge between the vertexes specified by the keys. Returns false if one or both of the keys are invalid or if they are the same.
-func (g *Graph) Connect(key string, otherKey string, value int) bool {
+// If there already is a connection, it is overwritten with the new edge weight.
+func (g *Graph) Connect(key string, otherKey string, weight int) bool {
 	// recursive edges are forbidden
 	if key == otherKey {
 		return false
@@ -175,14 +176,16 @@ func (g *Graph) Connect(key string, otherKey string, value int) bool {
 	}
 
 	// make a new edge
-	e := &edge{[2]*Vertex{v, otherV}, value}
+	e := &edge{[2]*Vertex{v, otherV}, weight}
 
 	// add it to both vertexes
 	v.Lock()
-	v.edges[otherV] = e
-	v.Unlock()
 	otherV.Lock()
+
+	v.edges[otherV] = e
 	otherV.edges[v] = e
+
+	v.Unlock()
 	otherV.Unlock()
 
 	// success
@@ -211,11 +214,14 @@ func (g *Graph) Disconnect(key string, otherKey string) bool {
 		return false
 	}
 
+	// delete the edge from both vertexes
 	v.Lock()
-	delete(v.edges, otherV)
-	v.Unlock()
 	otherV.Lock()
+
+	delete(v.edges, otherV)
 	delete(otherV.edges, v)
+
+	v.Unlock()
 	otherV.Unlock()
 
 	return true
