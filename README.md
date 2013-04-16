@@ -1,6 +1,7 @@
 # Graph <a href="http://goci.me/project/github.com/sauerbraten/graph"><img src="http://goci.me/project/image/github.com/sauerbraten/graph" /></a>
 
-A thread-safe implementation of the graph data structure in Go. See http://en.wikipedia.org/wiki/Graph_(data_structure) for more information.
+A thread-safe implementation of a graph data structure in Go. See http://en.wikipedia.org/wiki/Graph_(data_structure) for more information. This implementation is weighted, but undirected.
+
 
 ## Usage
 
@@ -15,10 +16,10 @@ Import the package:
 	)
 
 
-
 ## Documentation
 
 For full package documentation, visit http://godoc.org/github.com/sauerbraten/graph.
+
 
 ## License
 

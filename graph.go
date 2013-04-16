@@ -1,4 +1,4 @@
-// Package graph implements a graph data structure.
+// Package graph implements a weighted, undirected graph data structure.
 // See http://en.wikipedia.org/wiki/Graph_(data_structure) for more information.
 package graph
 
