@@ -17,6 +17,12 @@ type Vertex struct {
 	sync.RWMutex
 }
 
+// A Neighbor consists of a neighboring vertex and an edge value. This is not the value of the neighbouring vertex, but the value of the connection to it!
+type Neighbor struct {
+	V          *Vertex
+	EdgeWeight int
+}
+
 // Returns all adjacent vertexes and the respective edge's value as a slice, which may be empty.
 func (v *Vertex) GetNeighbors() []Neighbor {
 	if v == nil {
@@ -45,12 +51,6 @@ func (v *Vertex) Value() interface{} {
 	v.RUnlock()
 
 	return value
-}
-
-// A Neighbor consists of a neighboring vertex and an edge value. This is not the value of the neighbouring vertex, but the value of the connection to it!
-type Neighbor struct {
-	V         *Vertex
-	EdgeValue int
 }
 
 type Graph struct {
