@@ -8,7 +8,7 @@ import (
 
 type edge struct {
 	vertexes [2]*Vertex
-	value    int
+	weight   int
 }
 
 type Vertex struct {
@@ -27,7 +27,7 @@ func (v *Vertex) GetNeighbors() []Neighbor {
 
 	v.RLock()
 	for otherV, e := range v.edges {
-		neighbors = append(neighbors, Neighbor{otherV, e.value})
+		neighbors = append(neighbors, Neighbor{otherV, e.weight})
 	}
 	v.RUnlock()
 
@@ -235,14 +235,14 @@ func (g *Graph) Adjacent(key string, otherKey string) (bool, int) {
 		// iterate over it's map of edges; when the right vertex is found, return
 		for iteratingV, e := range v.edges {
 			if iteratingV == otherV {
-				return true, e.value
+				return true, e.weight
 			}
 		}
 	} else {
 		// iterate over it's map of edges; when the right vertex is found, return
 		for iteratingV, e := range otherV.edges {
 			if iteratingV == v {
-				return true, e.value
+				return true, e.weight
 			}
 		}
 	}

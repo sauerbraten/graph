@@ -27,7 +27,7 @@ func (g graphGob) add(key string, v *Vertex) {
 
 		// save the edge connection to the neighbor into the edges map
 		endpoints := [2]string{g.inv[edge.vertexes[0]], g.inv[edge.vertexes[1]]}
-		g.Edges[endpoints] = edge.value
+		g.Edges[endpoints] = edge.weight
 	}
 }
 
