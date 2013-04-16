@@ -13,7 +13,7 @@ type edge struct {
 
 type Vertex struct {
 	edges map[*Vertex]*edge // maps the neighbor node to the edge connecting this node to it
-	value interface{}       // the vertex stored value
+	value interface{}       // the stored value
 	sync.RWMutex
 }
 
@@ -63,6 +63,11 @@ func New() *Graph {
 	return &Graph{make(map[string]*Vertex), sync.RWMutex{}}
 }
 
+// Returns the amount of vertexes contained in the graph.
+func (g *Graph) Len() int {
+	return len(g.vertexes)
+}
+
 // Sets the value of the vertex with the specified key.
 func (g *Graph) Set(key string, value interface{}) {
 	// lock graph until this method is finished to prevent changes made by other goroutines while this one is looping etc.
@@ -88,7 +93,7 @@ func (g *Graph) Set(key string, value interface{}) {
 	v.Unlock()
 }
 
-// Deletes the vertex with the specified key.
+// Deletes the vertex with the specified key. Returns false if key is invalid.
 func (g *Graph) Delete(key string) bool {
 	// lock graph until this method is finished to prevent changes made by other goroutines while this one is looping etc.
 	g.Lock()
@@ -123,16 +128,14 @@ func (g *Graph) Delete(key string) bool {
 }
 
 // Returns a slice containing all vertexes. The slice is empty if the graph contains no nodes.
-func (g *Graph) GetAll() []*Vertex {
-	all := []*Vertex{}
-
+func (g *Graph) GetAll() (all []*Vertex) {
 	g.RLock()
 	for _, v := range g.vertexes {
 		all = append(all, v)
 	}
 	g.RUnlock()
 
-	return all
+	return
 }
 
 // Returns the vertex with this key, or nil if there is no vertex with this key.
@@ -218,7 +221,34 @@ func (g *Graph) Disconnect(key string, otherKey string) bool {
 	return true
 }
 
-// Returns the amount of vertexes contained in the graph.
-func (g *Graph) Len() int {
-	return len(g.vertexes)
+func (g *Graph) Adjacent(key string, otherKey string) (bool, int) {
+	g.RLock()
+	v := g.get(key)
+	otherV := g.get(otherKey)
+	g.RUnlock()
+
+	v.RLock()
+	otherV.RLock()
+
+	// choose vertex with less edges (easier to find 1 in 10 than to find 1 in 100)
+	if len(v.edges) < len(otherV.edges) {
+		// iterate over it's map of edges; when the right vertex is found, return
+		for iteratingV, e := range v.edges {
+			if iteratingV == otherV {
+				return true, e.value
+			}
+		}
+	} else {
+		// iterate over it's map of edges; when the right vertex is found, return
+		for iteratingV, e := range otherV.edges {
+			if iteratingV == v {
+				return true, e.value
+			}
+		}
+	}
+
+	v.RUnlock()
+	otherV.RUnlock()
+
+	return false, 0
 }
