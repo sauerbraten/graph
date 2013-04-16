@@ -1,6 +1,6 @@
 # Graph <a href="http://goci.me/project/github.com/sauerbraten/graph"><img src="http://goci.me/project/image/github.com/sauerbraten/graph" /></a>
 
-A thread-safe implementation of a graph data structure in Go. See http://en.wikipedia.org/wiki/Graph_(data_structure) for more information. This implementation is weighted, but undirected.
+A thread-safe implementation of a graph data structure in Go. See https://en.wikipedia.org/wiki/Graph_(abstract_data_type) for more information. This implementation is weighted, but undirected.
 
 
 ## Usage
