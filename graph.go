@@ -68,7 +68,7 @@ func (g *Graph) Len() int {
 	return len(g.vertexes)
 }
 
-// Sets the value of the vertex with the specified key.
+// If there is no vertex with the specified key yet, Set creates a new vertex and stores the value. Else, Set updates the value, but leaves all connections intact.
 func (g *Graph) Set(key string, value interface{}) {
 	// lock graph until this method is finished to prevent changes made by other goroutines
 	g.Lock()
