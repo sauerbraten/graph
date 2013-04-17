@@ -7,7 +7,7 @@ type metaData struct {
 	distanceFromStart int
 }
 
-// Returns the shortest path from the vertex with key startKey to the vertex with key endKey as a string slice, and if such a path exists at all, using a function to calculate an estimated distance from a vertex to the endVertex. The heuristic function is passed the keys of a vertex and the end vertex. This function uses the A* search algorithm.
+// Work in progress, do not use! See line 67 in a-star.go! Returns the shortest path from the vertex with key startKey to the vertex with key endKey as a string slice, and if such a path exists at all, using a function to calculate an estimated distance from a vertex to the endVertex. The heuristic function is passed the keys of a vertex and the end vertex. This function uses the A* search algorithm.
 func (g *Graph) ShortestPathWithHeuristic(startKey, endKey string, heuristic func(key, endKey string) int) (path []string, exists bool) {
 	g.RLock()
 	defer g.RUnlock()
