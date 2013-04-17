@@ -14,6 +14,7 @@ type edge struct {
 type Vertex struct {
 	edges map[*Vertex]*edge // maps the neighbor node to the edge connecting this node to it
 	value interface{}       // the stored value
+	key   string
 	sync.RWMutex
 }
 
@@ -79,7 +80,7 @@ func (g *Graph) Set(key string, value interface{}) {
 	// if no such node exists
 	if v == nil {
 		// create a new one
-		v = &Vertex{make(map[*Vertex]*edge), value, sync.RWMutex{}}
+		v = &Vertex{make(map[*Vertex]*edge), value, key, sync.RWMutex{}}
 
 		// and add it to the graph
 		g.vertexes[key] = v
