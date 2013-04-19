@@ -1,13 +1,10 @@
 package graph
 
-// meta data of vertexes in the closed list
-type metaData struct {
-	prev              *Vertex
-	estimate          int
-	distanceFromStart int
-}
+import (
+	"container/heap"
+)
 
-// Work in progress, do not use! See line 67 in a-star.go! Returns the shortest path from the vertex with key startKey to the vertex with key endKey as a string slice, and if such a path exists at all, using a function to calculate an estimated distance from a vertex to the endVertex. The heuristic function is passed the keys of a vertex and the end vertex. This function uses the A* search algorithm.
+// Returns the shortest path from the vertex with key startKey to the vertex with key endKey as a string slice, and if such a path exists at all, using a function to calculate an estimated distance from a vertex to the endVertex. The heuristic function is passed the keys of a vertex and the end vertex. This function uses the A* search algorithm.
 func (g *Graph) ShortestPathWithHeuristic(startKey, endKey string, heuristic func(key, endKey string) int) (path []string, exists bool) {
 	g.RLock()
 	defer g.RUnlock()
@@ -16,16 +13,25 @@ func (g *Graph) ShortestPathWithHeuristic(startKey, endKey string, heuristic fun
 	start := g.get(startKey)
 	end := g.get(endKey)
 
-	// list for vertexes that have not yet been visited (open vertexes)
-	openList := map[*Vertex]metaData{}
+	// priorityQueue for vertexes that have not yet been visited (open vertexes)
+	openQueue := &priorityQueue{}
+
+	// priorityQueue for vertexes that have not yet been visited (open vertexes)
+	openList := map[*Vertex]*Item{}
+
 	// list for vertexes that have been visited already (closed vertexes)
-	closedList := map[*Vertex]metaData{}
+	closedList := map[*Vertex]*Item{}
 
 	// add start vertex to list of open vertexes
-	openList[start] = metaData{nil, 0, 0}
+	item := &Item{start, nil, 0, 0, 0}
+	openList[start] = item
 
-	for current, ok := chooseNext(openList); ok; current, ok = chooseNext(openList) {
-		// current vertex was now visited, move it to list of closed vertexes
+	heap.Push(openQueue, item)
+
+	for openQueue.Len() > 0 {
+		current := heap.Pop(openQueue).(*Item).v
+
+		// current vertex was now visited; add to closed list
 		closedList[current] = openList[current]
 		delete(openList, current)
 
@@ -48,34 +54,34 @@ func (g *Graph) ShortestPathWithHeuristic(startKey, endKey string, heuristic fun
 
 		for _, n := range current.GetNeighbors() {
 			if _, ok := closedList[n.V]; ok {
+
 				continue
 			}
 
 			distanceToNeighbor := distance + n.EdgeWeight
 
 			// skip neighbors that already have a better path leading to them
-			if md, ok := openList[n.V]; ok && md.distanceFromStart < distanceToNeighbor {
-				continue
+			if md, ok := openList[n.V]; ok {
+				if md.distanceFromStart < distanceToNeighbor {
+					continue
+				} else {
+					heap.Remove(openQueue, md.index)
+				}
 			}
-			openList[n.V] = metaData{current, distance + n.EdgeWeight + heuristic(n.V.key, endKey), distance + n.EdgeWeight}
-		}
-	}
 
-	return
-}
+			item := &Item{
+				n.V,
+				current,
+				distanceToNeighbor,
+				distanceToNeighbor + heuristic(n.V.key, endKey), // estimate (= priority)
+				0,
+			}
 
-// WARNING: not finished! choosing the next vertex takes O(n) time; n being len(m)!
-func chooseNext(m map[*Vertex]metaData) (next *Vertex, ok bool) {
-	if len(m) == 0 {
-		return
-	}
+			// add neighbor vertex to list of open vertexes
+			openList[n.V] = item
 
-	bestEstimate := 1000
-	ok = true
-
-	for v, md := range m {
-		if md.estimate < bestEstimate {
-			next = v
+			// push into priority queue
+			heap.Push(openQueue, item)
 		}
 	}
 

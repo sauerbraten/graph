@@ -108,11 +108,11 @@ func ExampleShortestPathWithHeuristic() {
 	g.Connect("1", "3", 2) // these two lines make it cheaper to go 1→3
 	g.Connect("2", "3", 2) // than 1→2→3
 	g.Connect("3", "4", 1)
-	g.Connect("4", "5", 1) // cost of 4→5→6 is the same as
-	g.Connect("4", "6", 2) // going 4→6
+	g.Connect("4", "5", 1)
 	g.Connect("5", "6", 1)
 	g.Connect("6", "7", 1)
-	g.Connect("7", "8", 1)
+	g.Connect("6", "8", 2) // these two lines make it cheaper to go 6→8
+	g.Connect("7", "8", 2) // than 6→7→8
 	g.Connect("8", "9", 1)
 
 	// the heuristic function used here returns the absolute difference between the two ints as a simple guessing technique
@@ -136,5 +136,5 @@ func ExampleShortestPathWithHeuristic() {
 	fmt.Println()
 
 	// Output:
-	// 9 8 7 6 4 3 1
+	// 9 8 6 5 4 3 1
 }
