@@ -228,10 +228,25 @@ func (g *Graph) Disconnect(key string, otherKey string) bool {
 	return true
 }
 
-func (g *Graph) Adjacent(key string, otherKey string) (bool, int) {
+// Returns true and the edge weight if there is an edge between the vertexes specified by their keys. Returns false if one or both keys are invalid, if they are the same, or if there is no edge between the vertexes.
+func (g *Graph) Adjacent(key string, otherKey string) (exists bool, weight int) {
+	// sanity check
+	if key == otherKey {
+		return
+	}
+
 	g.RLock()
+
 	v := g.get(key)
+	if v == nil {
+		return
+	}
+
 	otherV := g.get(otherKey)
+	if otherV == nil {
+		return
+	}
+
 	g.RUnlock()
 
 	v.RLock()
@@ -257,5 +272,5 @@ func (g *Graph) Adjacent(key string, otherKey string) (bool, int) {
 	v.RUnlock()
 	otherV.RUnlock()
 
-	return false, 0
+	return
 }
