@@ -1,5 +1,5 @@
 // Package graph implements a weighted, undirected graph data structure.
-// See http://en.wikipedia.org/wiki/Graph_(data_structure) for more information.
+// See https://en.wikipedia.org/wiki/Graph_(abstract_data_type) for more information.
 package graph
 
 import (
