@@ -207,18 +207,22 @@ func (g *Graph) Adjacent(key string, otherKey string) (exists bool, weight int) 
 
 	v := g.get(key)
 	if v == nil {
+		g.RUnlock()
 		return
 	}
 
 	otherV := g.get(otherKey)
 	if otherV == nil {
+		g.RUnlock()
 		return
 	}
 
 	g.RUnlock()
 
 	v.RLock()
-	otherV.RLock()
+	defer v.RUnlock()
+	otherV.RUnlock()
+	defer otherV.RLock()
 
 	// choose vertex with less edges (easier to find 1 in 10 than to find 1 in 100)
 	if len(v.neighbors) < len(otherV.neighbors) {
@@ -236,9 +240,6 @@ func (g *Graph) Adjacent(key string, otherKey string) (exists bool, weight int) 
 			}
 		}
 	}
-
-	v.RUnlock()
-	otherV.RUnlock()
 
 	return
 }
