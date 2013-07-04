@@ -21,14 +21,6 @@ func (g graphGob) add(v *Vertex) {
 
 	// for each neighbor...
 	for neighbor, weight := range v.neighbors {
-		/*
-			// check if it already exists in the vertexes map
-			if _, ok := g.Vertexes[g.inv[neighbor]]; !ok {
-				// if not, recursively add it before proceeding
-				g.add(g.inv[neighbor], neighbor)
-			}
-		*/
-
 		// save the edge connection to the neighbor into the edges map
 		g.Edges[v.key][neighbor.key] = weight
 	}
