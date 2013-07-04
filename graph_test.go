@@ -115,15 +115,15 @@ func TestDelete(t *testing.T) {
 
 	// test for orphaned connections
 	neighbors := g.get("2").GetNeighbors()
-	for _, n := range neighbors {
-		if n.V == one {
+	for n, _ := range neighbors {
+		if n == one {
 			t.Fail()
 		}
 	}
 
 	neighbors = g.get("3").GetNeighbors()
-	for _, n := range neighbors {
-		if n.V == one {
+	for n, _ := range neighbors {
+		if n == one {
 			t.Fail()
 		}
 	}
@@ -213,7 +213,7 @@ func ExampleGraph() {
 func printVertexes(vSlice map[string]*Vertex) {
 	for _, v := range vSlice {
 		fmt.Printf("%v\n", v.value)
-		for otherV, _ := range v.edges {
+		for otherV, _ := range v.neighbors {
 			fmt.Printf("  → %v\n", otherV.value)
 		}
 	}

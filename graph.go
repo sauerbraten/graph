@@ -6,36 +6,21 @@ import (
 	"sync"
 )
 
-type edge struct {
-	vertexes [2]*Vertex
-	weight   int
-}
-
 type Vertex struct {
-	edges map[*Vertex]*edge // maps the neighbor node to the edge connecting this node to it
-	value interface{}       // the stored value
-	key   string
+	key       string
+	value     interface{}     // the stored value
+	neighbors map[*Vertex]int // maps the neighbor node to the weight of the connection to it
 	sync.RWMutex
 }
 
-// A Neighbor consists of a neighboring vertex and an edge weight.
-type Neighbor struct {
-	V          *Vertex
-	EdgeWeight int
-}
-
-// Returns all adjacent vertexes and the respective edge's weight as a slice, which may be empty.
-func (v *Vertex) GetNeighbors() []Neighbor {
+// Returns the map of neighbors.
+func (v *Vertex) GetNeighbors() map[*Vertex]int {
 	if v == nil {
 		return nil
 	}
 
-	neighbors := []Neighbor{}
-
 	v.RLock()
-	for otherV, e := range v.edges {
-		neighbors = append(neighbors, Neighbor{otherV, e.weight})
-	}
+	neighbors := v.neighbors
 	v.RUnlock()
 
 	return neighbors
@@ -61,7 +46,7 @@ type Graph struct {
 
 // Initializes a new graph.
 func New() *Graph {
-	return &Graph{make(map[string]*Vertex), sync.RWMutex{}}
+	return &Graph{map[string]*Vertex{}, sync.RWMutex{}}
 }
 
 // Returns the amount of vertexes contained in the graph.
@@ -80,7 +65,7 @@ func (g *Graph) Set(key string, value interface{}) {
 	// if no such node exists
 	if v == nil {
 		// create a new one
-		v = &Vertex{make(map[*Vertex]*edge), value, key, sync.RWMutex{}}
+		v = &Vertex{key, value, map[*Vertex]int{}, sync.RWMutex{}}
 
 		// and add it to the graph
 		g.vertexes[key] = v
@@ -106,20 +91,12 @@ func (g *Graph) Delete(key string) bool {
 		return false
 	}
 
-	// iterate over edges, remove edges from neighboring vertexes
-	for _, e := range v.edges {
-		ends := e.vertexes
-
-		// choose other node, not v
-		otherV := ends[0]
-		if v == ends[0] {
-			otherV = ends[1]
-		}
-
+	// iterate over neighbors, remove edges from neighboring vertexes
+	for neighbor, _ := range v.neighbors {
 		// delete edge to the to-be-deleted vertex
-		otherV.Lock()
-		delete(otherV.edges, v)
-		otherV.Unlock()
+		neighbor.Lock()
+		delete(neighbor.neighbors, v)
+		neighbor.Unlock()
 	}
 
 	// delete vertex
@@ -167,24 +144,18 @@ func (g *Graph) Connect(key string, otherKey string, weight int) bool {
 
 	// get vertexes and check for validity of keys
 	v := g.get(key)
-	if v == nil {
-		return false
-	}
-
 	otherV := g.get(otherKey)
-	if otherV == nil {
+
+	if v == nil || otherV == nil {
 		return false
 	}
 
-	// make a new edge
-	e := &edge{[2]*Vertex{v, otherV}, weight}
-
-	// add it to both vertexes
+	// add connection to both vertexes
 	v.Lock()
 	otherV.Lock()
 
-	v.edges[otherV] = e
-	otherV.edges[v] = e
+	v.neighbors[otherV] = weight
+	otherV.neighbors[v] = weight
 
 	v.Unlock()
 	otherV.Unlock()
@@ -206,12 +177,9 @@ func (g *Graph) Disconnect(key string, otherKey string) bool {
 
 	// get vertexes and check for validity of keys
 	v := g.get(key)
-	if v == nil {
-		return false
-	}
-
 	otherV := g.get(otherKey)
-	if otherV == nil {
+
+	if v == nil || otherV == nil {
 		return false
 	}
 
@@ -219,8 +187,8 @@ func (g *Graph) Disconnect(key string, otherKey string) bool {
 	v.Lock()
 	otherV.Lock()
 
-	delete(v.edges, otherV)
-	delete(otherV.edges, v)
+	delete(v.neighbors, otherV)
+	delete(otherV.neighbors, v)
 
 	v.Unlock()
 	otherV.Unlock()
@@ -253,18 +221,18 @@ func (g *Graph) Adjacent(key string, otherKey string) (exists bool, weight int) 
 	otherV.RLock()
 
 	// choose vertex with less edges (easier to find 1 in 10 than to find 1 in 100)
-	if len(v.edges) < len(otherV.edges) {
+	if len(v.neighbors) < len(otherV.neighbors) {
 		// iterate over it's map of edges; when the right vertex is found, return
-		for iteratingV, e := range v.edges {
+		for iteratingV, weight := range v.neighbors {
 			if iteratingV == otherV {
-				return true, e.weight
+				return true, weight
 			}
 		}
 	} else {
 		// iterate over it's map of edges; when the right vertex is found, return
-		for iteratingV, e := range otherV.edges {
+		for iteratingV, weight := range otherV.neighbors {
 			if iteratingV == v {
-				return true, e.weight
+				return true, weight
 			}
 		}
 	}

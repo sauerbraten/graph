@@ -9,25 +9,28 @@ import (
 type graphGob struct {
 	inv      map[*Vertex]string
 	Vertexes map[string]interface{}
-	Edges    map[[2]string]int
+	Edges    map[string]map[string]int
 }
 
 // adds a key - vertex pair to the graphGob
-func (g graphGob) add(key string, v *Vertex) {
+func (g graphGob) add(v *Vertex) {
 	// set the key - vertex pair
-	g.Vertexes[key] = v.value
+	g.Vertexes[v.key] = v.value
+
+	g.Edges[v.key] = map[string]int{}
 
 	// for each neighbor...
-	for neighbor, edge := range v.edges {
-		// check if it already exists in the vertexes map
-		if _, ok := g.Vertexes[g.inv[neighbor]]; !ok {
-			// if not, recursively add it before proceeding
-			g.add(g.inv[neighbor], neighbor)
-		}
+	for neighbor, weight := range v.neighbors {
+		/*
+			// check if it already exists in the vertexes map
+			if _, ok := g.Vertexes[g.inv[neighbor]]; !ok {
+				// if not, recursively add it before proceeding
+				g.add(g.inv[neighbor], neighbor)
+			}
+		*/
 
 		// save the edge connection to the neighbor into the edges map
-		endpoints := [2]string{g.inv[edge.vertexes[0]], g.inv[edge.vertexes[1]]}
-		g.Edges[endpoints] = edge.weight
+		g.Edges[v.key][neighbor.key] = weight
 	}
 }
 
@@ -41,11 +44,11 @@ func (g *Graph) GobEncode() ([]byte, error) {
 		}
 	}
 
-	gGob := graphGob{inv, map[string]interface{}{}, map[[2]string]int{}}
+	gGob := graphGob{inv, map[string]interface{}{}, map[string]map[string]int{}}
 
 	// add vertexes and edges to gGob
-	for key, v := range g.vertexes {
-		gGob.add(key, v)
+	for _, v := range g.vertexes {
+		gGob.add(v)
 	}
 
 	// encode gGob
@@ -74,9 +77,11 @@ func (g *Graph) GobDecode(b []byte) (err error) {
 	}
 
 	// connect the vertexes
-	for endpoints, value := range gGob.Edges {
-		if ok := g.Connect(endpoints[0], endpoints[1], value); !ok {
-			return errors.New("invalid edge endpoints")
+	for key, neighbors := range gGob.Edges {
+		for otherKey, weight := range neighbors {
+			if ok := g.Connect(key, otherKey, weight); !ok {
+				return errors.New("invalid edge endpoints")
+			}
 		}
 	}
 
