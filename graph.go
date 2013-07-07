@@ -3,6 +3,7 @@
 package graph
 
 import (
+	"errors"
 	"sync"
 )
 
@@ -24,6 +25,19 @@ func (v *Vertex) GetNeighbors() map[*Vertex]int {
 	v.RUnlock()
 
 	return neighbors
+}
+
+// Returns the vertexes key.
+func (v *Vertex) Key() string {
+	if v == nil {
+		return ""
+	}
+
+	v.RLock()
+	key := v.key
+	v.RUnlock()
+
+	return key
 }
 
 // Returns the Vertexes value.
@@ -116,13 +130,17 @@ func (g *Graph) GetAll() (all []*Vertex) {
 	return
 }
 
-// Returns the vertex with this key, or nil if there is no vertex with this key.
-func (g *Graph) Get(key string) *Vertex {
+// Returns the vertex with this key, or nil and an error if there is no vertex with this key.
+func (g *Graph) Get(key string) (v *Vertex, err error) {
 	g.RLock()
-	v := g.get(key)
+	v = g.get(key)
 	g.RUnlock()
 
-	return v
+	if v == nil {
+		err = errors.New("graph: invalid key")
+	}
+
+	return
 }
 
 // Internal function, does NOT lock the graph, should only be used in between RLock() and RUnlock() (or Lock() and Unlock()).

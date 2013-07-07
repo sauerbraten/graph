@@ -168,7 +168,7 @@ func TestGob(t *testing.T) {
 
 	// validate contents of new graph
 	for k, v := range g.vertexes {
-		if newV := newG.Get(k); newV.value != v.value {
+		if newV := newG.get(k); newV.value != v.value {
 			t.Fail()
 		}
 	}
