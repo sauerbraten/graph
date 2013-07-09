@@ -9,7 +9,6 @@ import (
 
 type Vertex struct {
 	key       string
-	value     interface{}     // the stored value
 	neighbors map[*Vertex]int // maps the neighbor node to the weight of the connection to it
 	sync.RWMutex
 }
@@ -40,19 +39,6 @@ func (v *Vertex) Key() string {
 	return key
 }
 
-// Returns the Vertexes value.
-func (v *Vertex) Value() interface{} {
-	if v == nil {
-		return nil
-	}
-
-	v.RLock()
-	value := v.value
-	v.RUnlock()
-
-	return value
-}
-
 type Graph struct {
 	vertexes map[string]*Vertex // A map of all the vertexes in this graph, indexed by their key.
 	sync.RWMutex
@@ -68,29 +54,20 @@ func (g *Graph) Len() int {
 	return len(g.vertexes)
 }
 
-// If there is no vertex with the specified key yet, Set creates a new vertex and stores the value. Else, Set updates the value, but leaves all connections intact.
-func (g *Graph) Set(key string, value interface{}) {
+// Creates a new vertex. Returns true if the vertex was created, false if the key is already in use.
+func (g *Graph) Add(key string) bool {
 	// lock graph until this method is finished to prevent changes made by other goroutines
 	g.Lock()
 	defer g.Unlock()
 
-	v := g.get(key)
-
-	// if no such node exists
-	if v == nil {
-		// create a new one
-		v = &Vertex{key, value, map[*Vertex]int{}, sync.RWMutex{}}
-
-		// and add it to the graph
-		g.vertexes[key] = v
-
-		return
+	if g.get(key) != nil {
+		return false
 	}
 
-	// else, just update the value
-	v.Lock()
-	v.value = value
-	v.Unlock()
+	// create new vertex and add it to the graph
+	g.vertexes[key] = &Vertex{key, map[*Vertex]int{}, sync.RWMutex{}}
+
+	return true
 }
 
 // Deletes the vertex with the specified key. Returns false if key is invalid.
