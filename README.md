@@ -2,6 +2,7 @@
 
 A thread-safe implementation of a graph data structure in Go. See https://en.wikipedia.org/wiki/Graph_(abstract_data_type) for more information. This implementation is weighted, but undirected.
 
+This is the no-storage branch, which can not store values in the graph's vertexes.
 
 ## Usage
 
