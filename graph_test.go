@@ -11,10 +11,10 @@ func TestConnect(t *testing.T) {
 	g := New()
 
 	// set some vertexes
-	g.Set("1", 123)
-	g.Set("2", 678)
-	g.Set("3", "abc")
-	g.Set("4", "xyz")
+	g.Add("1")
+	g.Add("2")
+	g.Add("3")
+	g.Add("4")
 
 	// make some connections
 	ok := g.Connect("1", "2", 5)
@@ -69,10 +69,10 @@ func TestDelete(t *testing.T) {
 	g := New()
 
 	// set some vertexes
-	g.Set("1", 123)
-	g.Set("2", 678)
-	g.Set("3", "abc")
-	g.Set("4", "xyz")
+	g.Add("1")
+	g.Add("2")
+	g.Add("3")
+	g.Add("4")
 
 	// make some connections
 	ok := g.Connect("1", "2", 5)
@@ -133,10 +133,10 @@ func TestGob(t *testing.T) {
 	g := New()
 
 	// set key → value pairs
-	g.Set("1", 123)
-	g.Set("2", 678)
-	g.Set("3", "abc")
-	g.Set("4", "xyz")
+	g.Add("1")
+	g.Add("2")
+	g.Add("3")
+	g.Add("4")
 
 	// connect vertexes/nodes
 	g.Connect("1", "2", 5)
@@ -168,7 +168,7 @@ func TestGob(t *testing.T) {
 
 	// validate contents of new graph
 	for k, v := range g.vertexes {
-		if newV := newG.get(k); newV.value != v.value {
+		if newV := newG.get(k); newV.key != v.key {
 			t.Fail()
 		}
 	}
@@ -178,10 +178,10 @@ func ExampleGraph() {
 	g := New()
 
 	// set key → value pairs
-	g.Set("1", 123)
-	g.Set("2", 678)
-	g.Set("3", "abc")
-	g.Set("4", "xyz")
+	g.Add("1")
+	g.Add("2")
+	g.Add("3")
+	g.Add("4")
 
 	// connect vertexes/nodes
 	g.Connect("1", "2", 5)
@@ -212,9 +212,9 @@ func ExampleGraph() {
 
 func printVertexes(vSlice map[string]*Vertex) {
 	for _, v := range vSlice {
-		fmt.Printf("%v\n", v.value)
+		fmt.Printf("%v\n", v.key)
 		for otherV, _ := range v.neighbors {
-			fmt.Printf("  → %v\n", otherV.value)
+			fmt.Printf("  → %v\n", otherV.key)
 		}
 	}
 }

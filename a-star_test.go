@@ -5,19 +5,38 @@ import (
 	"testing"
 )
 
+var (
+	// simple heurisitc function – the heuristic function used here returns the absolute difference between the two ints as a simple guessing technique
+	h func(string, string) int = func(key, otherKey string) int {
+		diff := m[key] - m[otherKey]
+
+		if diff < 0 {
+			diff = -diff
+		}
+
+		return diff
+	}
+
+	m map[string]int = map[string]int{
+		"1": 1,
+		"2": 2,
+		"3": 3,
+		"4": 4,
+		"5": 5,
+		"6": 6,
+		"7": 7,
+		"8": 8,
+		"9": 9,
+	}
+)
+
 func TestShortestPathWithHeuristic(t *testing.T) {
 	g := New()
 
-	// set key → value pairs
-	g.Set("1", 1)
-	g.Set("2", 2)
-	g.Set("3", 3)
-	g.Set("4", 4)
-	g.Set("5", 5)
-	g.Set("6", 6)
-	g.Set("7", 7)
-	g.Set("8", 8)
-	g.Set("9", 9)
+	// add vertexes
+	for key := range m {
+		g.Add(key)
+	}
 
 	// connect vertexes/nodes
 	g.Connect("1", "2", 1)
@@ -31,17 +50,7 @@ func TestShortestPathWithHeuristic(t *testing.T) {
 	g.Connect("7", "8", 1)
 	g.Connect("8", "9", 1)
 
-	// the heuristic function used here returns the absolute difference between the two ints as a simple guessing technique
-	_, ok := g.ShortestPathWithHeuristic("1", "9", func(key, otherKey string) int {
-		diff := g.get(key).value.(int) - g.get(key).value.(int)
-
-		if diff < 0 {
-			diff = -diff
-		}
-
-		return diff
-	})
-
+	_, ok := g.ShortestPathWithHeuristic("1", "9", h)
 	if !ok {
 		t.Fail()
 	}
@@ -50,16 +59,10 @@ func TestShortestPathWithHeuristic(t *testing.T) {
 
 	g = New()
 
-	// set key → value pairs
-	g.Set("1", 1)
-	g.Set("2", 2)
-	g.Set("3", 3)
-	g.Set("4", 4)
-	g.Set("5", 5)
-	g.Set("6", 6)
-	g.Set("7", 7)
-	g.Set("8", 8)
-	g.Set("9", 9)
+	// add vertexes
+	for key := range m {
+		g.Add(key)
+	}
 
 	// connect vertexes/nodes
 	g.Connect("1", "2", 1)
@@ -73,17 +76,7 @@ func TestShortestPathWithHeuristic(t *testing.T) {
 	g.Connect("7", "8", 1)
 	g.Connect("8", "9", 1)
 
-	// the heuristic function used here returns the absolute difference between the two ints as a simple guessing technique
-	_, ok = g.ShortestPathWithHeuristic("1", "9", func(key, otherKey string) int {
-		diff := g.get(key).value.(int) - g.get(key).value.(int)
-
-		if diff < 0 {
-			diff = -diff
-		}
-
-		return diff
-	})
-
+	_, ok = g.ShortestPathWithHeuristic("1", "9", h)
 	if ok {
 		t.Fail()
 	}
@@ -92,16 +85,10 @@ func TestShortestPathWithHeuristic(t *testing.T) {
 func ExampleShortestPathWithHeuristic() {
 	g := New()
 
-	// set key → value pairs
-	g.Set("1", 1)
-	g.Set("2", 2)
-	g.Set("3", 3)
-	g.Set("4", 4)
-	g.Set("5", 5)
-	g.Set("6", 6)
-	g.Set("7", 7)
-	g.Set("8", 8)
-	g.Set("9", 9)
+	// add vertexes
+	for key := range m {
+		g.Add(key)
+	}
 
 	// connect vertexes/nodes
 	g.Connect("1", "2", 1)
@@ -116,16 +103,7 @@ func ExampleShortestPathWithHeuristic() {
 	g.Connect("8", "9", 1)
 
 	// the heuristic function used here returns the absolute difference between the two ints as a simple guessing technique
-	path, ok := g.ShortestPathWithHeuristic("1", "9", func(key, otherKey string) int {
-		diff := g.get(key).value.(int) - g.get(key).value.(int)
-
-		if diff < 0 {
-			diff = -diff
-		}
-
-		return diff
-	})
-
+	path, ok := g.ShortestPathWithHeuristic("1", "9", h)
 	if !ok {
 		fmt.Println("something went wrong")
 	}
