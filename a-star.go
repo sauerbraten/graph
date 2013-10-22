@@ -22,10 +22,10 @@ func (g *Graph) ShortestPathWithHeuristic(startKey, endKey string, heuristic fun
 	// priorityQueue for vertexes that have not yet been visited (open vertexes)
 	openQueue := &priorityQueue{}
 
-	// priorityQueue for vertexes that have not yet been visited (open vertexes)
+	// list containing vertexes that have not yet been visited (open vertexes)
 	openList := map[*Vertex]*Item{}
 
-	// list for vertexes that have been visited already (closed vertexes)
+	// list containing vertexes that have been visited already (closed vertexes)
 	closedList := map[*Vertex]*Item{}
 
 	// add start vertex to list of open vertexes
