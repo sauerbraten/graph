@@ -2,11 +2,11 @@ package graph
 
 // An Item is something we manage in a priority queue.
 type Item struct {
-	v                 *Vertex // vertex this meta data belongs to
-	prev              *Vertex // previous waypoint in the shortest path from start to here
-	distanceFromStart int     // distance form start to this vertex using the shortest known path
-	priority          int     // The priority of the item in the queue (= estimated distance from end vertex). Low value means high priority.
-	index             int     // The index of the item in the heap. You do not need to set this, it's done automatically in Push(). DO NOT CHANGE!
+	n                 *Node // node this meta data belongs to
+	prev              *Node // previous waypoint in the shortest path from start to here
+	distanceFromStart int   // distance form start to this node using the shortest known path
+	priority          int   // The priority of the item in the queue (= estimated distance from end node). Low value means high priority.
+	index             int   // The index of the item in the heap. You do not need to set this, it's done automatically in Push(). DO NOT CHANGE!
 }
 
 // A priorityQueue implements heap.Interface and holds Items.

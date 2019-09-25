@@ -33,12 +33,12 @@ var (
 func TestShortestPathWithHeuristic(t *testing.T) {
 	g := New()
 
-	// add vertexes
+	// add nodes
 	for key := range m {
 		g.Add(key)
 	}
 
-	// connect vertexes/nodes
+	// connect nodes
 	g.Connect("1", "2", 1)
 	g.Connect("1", "3", 2) // these two lines make it cheaper to go 1→3
 	g.Connect("2", "3", 2) // than 1→2→3
@@ -59,12 +59,12 @@ func TestShortestPathWithHeuristic(t *testing.T) {
 
 	g = New()
 
-	// add vertexes
+	// add nodes
 	for key := range m {
 		g.Add(key)
 	}
 
-	// connect vertexes/nodes
+	// connect nodes
 	g.Connect("1", "2", 1)
 	g.Connect("1", "3", 2) // these two lines make it cheaper to go 1→3
 	g.Connect("2", "3", 2) // than 1→2→3
@@ -85,12 +85,12 @@ func TestShortestPathWithHeuristic(t *testing.T) {
 func ExampleShortestPathWithHeuristic() {
 	g := New()
 
-	// add vertexes
+	// add nodes
 	for key := range m {
 		g.Add(key)
 	}
 
-	// connect vertexes/nodes
+	// connect nodes
 	g.Connect("1", "2", 1)
 	g.Connect("1", "3", 2) // these two lines make it cheaper to go 1→3
 	g.Connect("2", "3", 2) // than 1→2→3

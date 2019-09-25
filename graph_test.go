@@ -1,8 +1,6 @@
 package graph
 
 import (
-	"bytes"
-	"encoding/gob"
 	"fmt"
 	"testing"
 )
@@ -10,7 +8,7 @@ import (
 func TestConnect(t *testing.T) {
 	g := New()
 
-	// set some vertexes
+	// set some nodes
 	g.Add("1")
 	g.Add("2")
 	g.Add("3")
@@ -68,7 +66,7 @@ func TestConnect(t *testing.T) {
 func TestDelete(t *testing.T) {
 	g := New()
 
-	// set some vertexes
+	// set some nodes
 	g.Add("1")
 	g.Add("2")
 	g.Add("3")
@@ -129,51 +127,6 @@ func TestDelete(t *testing.T) {
 	}
 }
 
-func TestGob(t *testing.T) {
-	g := New()
-
-	// set key → value pairs
-	g.Add("1")
-	g.Add("2")
-	g.Add("3")
-	g.Add("4")
-
-	// connect vertexes/nodes
-	g.Connect("1", "2", 5)
-	g.Connect("1", "3", 1)
-	g.Connect("2", "3", 9)
-	g.Connect("4", "2", 3)
-
-	// encode
-	buf := &bytes.Buffer{}
-	enc := gob.NewEncoder(buf)
-
-	err := enc.Encode(g)
-	if err != nil {
-		fmt.Println(err)
-	}
-
-	// now decode into new graph
-	dec := gob.NewDecoder(buf)
-	newG := New()
-	err = dec.Decode(newG)
-	if err != nil {
-		fmt.Println(err)
-	}
-
-	// validate length of new graph
-	if len(g.vertexes) != len(newG.vertexes) {
-		t.Fail()
-	}
-
-	// validate contents of new graph
-	for k, v := range g.vertexes {
-		if newV := newG.get(k); newV.key != v.key {
-			t.Fail()
-		}
-	}
-}
-
 func ExampleGraph() {
 	g := New()
 
@@ -183,7 +136,7 @@ func ExampleGraph() {
 	g.Add("3")
 	g.Add("4")
 
-	// connect vertexes/nodes
+	// connect nodes
 	g.Connect("1", "2", 5)
 	g.Connect("1", "3", 1)
 	g.Connect("2", "3", 9)
@@ -191,30 +144,13 @@ func ExampleGraph() {
 
 	// delete a node, and all connections to it
 	g.Delete("1")
-
-	// encode into buffer
-	buf := &bytes.Buffer{}
-	enc := gob.NewEncoder(buf)
-
-	err := enc.Encode(g)
-	if err != nil {
-		fmt.Println(err)
-	}
-
-	// now decode into new graph
-	dec := gob.NewDecoder(buf)
-	newG := New()
-	err = dec.Decode(newG)
-	if err != nil {
-		fmt.Println(err)
-	}
 }
 
-func printVertexes(vSlice map[string]*Vertex) {
-	for _, v := range vSlice {
-		fmt.Printf("%v\n", v.key)
-		for otherV, _ := range v.neighbors {
-			fmt.Printf("  → %v\n", otherV.key)
+func printNodes(nodes map[string]*Node) {
+	for _, n := range nodes {
+		fmt.Printf("%v\n", n.key)
+		for neighbor, _ := range n.neighbors {
+			fmt.Printf("  → %v\n", neighbor.key)
 		}
 	}
 }
