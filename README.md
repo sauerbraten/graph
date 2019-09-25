@@ -1,4 +1,4 @@
-# Graph <a href="http://goci.me/project/github.com/sauerbraten/graph"><img src="http://goci.me/project/image/github.com/sauerbraten/graph" /></a>
+# Graph
 
 A thread-safe implementation of a graph data structure in Go. See https://en.wikipedia.org/wiki/Graph_(abstract_data_type) for more information. This implementation is weighted, but undirected.
 
@@ -8,10 +8,7 @@ There is also a version of this package that supports storing values in the grap
 
 Get the package:
 
-	$ go get -d github.com/sauerbraten/graph
-	$ cd $GOROOT/src/github.com/sauerbraten/graph
-	$ git checkout no-storage
-	$ go install
+	$ go get github.com/sauerbraten/graph
 
 Import the package:
 
@@ -29,7 +26,7 @@ For full package documentation, visit http://godoc.org/github.com/sauerbraten/gr
 
 This code is licensed under a BSD License:
 
-Copyright (c) 2013 Alexander Willing. All rights reserved.
+Copyright (c) 2013-2019 Alexander Willing. All rights reserved.
 
 - Redistributions of source code must retain the above copyright notice, this list of conditions and the following disclaimer.
 - Redistributions in binary form must reproduce the above copyright notice, this list of conditions and the following disclaimer in the documentation and/or other materials provided with the distribution.
