@@ -203,7 +203,6 @@ func createGrid(rows, columns int) *Graph {
 		g.Connect(nodeKey, strconv.Itoa(downLeft), rand.Intn(5))
 	}
 
-
 	return g
 }
 
@@ -232,13 +231,14 @@ func getDown(nodePos, rows, columns int) int {
 func BenchmarkShortestPathWithHeuristic_100X100GridOfNodes(b *testing.B) {
 	rows, columns := 100, 100
 	grid := createGrid(rows, columns)
-	randomNodes := createLongListOfRandomKeyNodes(rows * columns, 2000)
+	randomNodes := createLongListOfRandomKeyNodes(rows * columns, 100000)
+
 	b.ResetTimer()
 
 	for i := 0; i < b.N; i++ {
-		_, ok := grid.ShortestPathWithHeuristic(randomNodes[i].fromNode, randomNodes[i].toNode, h)
+		_, ok := grid.ShortestPathWithHeuristic(randomNodes[i].fromNode, randomNodes[i].toNode, heuristicFor100X100Grid)
 		if !ok {
-			b.Fatal(`ok is false`)
+			b.Fatal(`ok is false`, randomNodes[i])
 		}
 	}
 }
@@ -251,11 +251,108 @@ func createLongListOfRandomKeyNodes(totalNumberOfNodes, resultLength int) (res [
 	rand.Seed(time.Now().UnixNano())
 
 	for i:=0; i < resultLength; i++ {
-		res = append(res, randFromTo{
-			fromNode: strconv.Itoa(rand.Intn(totalNumberOfNodes)),
-			toNode:   strconv.Itoa(rand.Intn(totalNumberOfNodes)),
-		})
+		randRes := randFromTo{"0", "0"}
+		for ; randRes.fromNode == "0" || randRes.toNode == "0" ; {
+			randRes = randFromTo{
+				fromNode: strconv.Itoa(rand.Intn(totalNumberOfNodes)),
+				toNode:   strconv.Itoa(rand.Intn(totalNumberOfNodes)),
+			}
+		}
+
+		res = append(res, randRes)
 	}
 
 	return res
+}
+
+func TestHeuristicCalculationFor100X100Grid(t *testing.T) {
+	expected := []struct {
+		startNode, endNode string
+		distance int
+	}{
+		{
+			startNode: "0",
+			endNode:   "1",
+			distance:  1,
+		},
+		{
+			startNode: "1",
+			endNode:   "3",
+			distance:  2,
+		},
+		{
+			startNode: "1",
+			endNode:   "101",
+			distance:  1,
+		},
+		{
+			startNode: "220",
+			endNode:   "450",
+			distance:  30,
+		},
+		{
+			startNode: "50",
+			endNode:   "850",
+			distance:  8,
+		},
+		{
+			startNode: "950",
+			endNode:   "102",
+			distance:  48,
+		},
+		{
+			startNode: "940",
+			endNode:   "7172",
+			distance:  38, // 32 to the right + 62 down (38 up)
+		},
+		{
+			startNode: "7172",
+			endNode:   "940",
+			distance:  38, // 32 to the left + 62 up (38 down)
+		},
+		{
+			startNode: "7178",
+			endNode:   "7920",
+			distance:  42, // 58 to the left >
+		},
+	}
+
+	for _, e := range expected {
+		res := heuristicFor100X100Grid(e.startNode, e.endNode)
+		if res != e.distance {
+			t.Fatalf("Distance between startNode %v and endNode %v should have been %v but was %v",
+				e.startNode, e.endNode, e.distance, res)
+		}
+	}
+}
+
+func heuristicFor100X100Grid(startKey, endKey string) int {
+	rows, cols := 100, 100
+
+	startPos, _ := strconv.Atoi(startKey)
+	endPos, _ := strconv.Atoi(endKey)
+
+	rowsDiff := calculateDiff((startPos / rows) - (endPos / rows), cols)
+	colsDiff := calculateDiff((startPos % cols) - (endPos % cols), cols)
+
+	var distanceToEndNode int
+	for ; rowsDiff > 0 || colsDiff > 0; {
+		// both diff's get reduced by one to simulate a diagonal step
+		rowsDiff--
+		colsDiff--
+
+		distanceToEndNode++
+	}
+
+	return distanceToEndNode
+}
+
+func calculateDiff(diff int, size int) int {
+	if diff < 0 {
+		diff = -diff
+	}
+	if diff > size/2 {
+		diff = size - diff
+	}
+	return diff
 }
