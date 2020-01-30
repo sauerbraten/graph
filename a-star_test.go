@@ -85,7 +85,7 @@ func TestShortestPathWithHeuristic(t *testing.T) {
 	}
 }
 
-func ExampleShortestPathWithHeuristic() {
+func ExampleGraph_ShortestPathWithHeuristic() {
 	g := New()
 
 	// add nodes
@@ -122,20 +122,20 @@ func ExampleShortestPathWithHeuristic() {
 
 func TestCreateGrid_100X100Nodes(t *testing.T) {
 	expectedNodesConnections := []struct {
-		connectedNode string
+		connectedNode       string
 		expectedConnections []string
-	} {
+	}{
 		{
 			connectedNode: "1",
 			expectedConnections: []string{
-				"2", // right
-				"102", // right-down
-				"101", // down
-				"200", // left-down
-				"100", // left
+				"2",     // right
+				"102",   // right-down
+				"101",   // down
+				"200",   // left-down
+				"100",   // left
 				"10000", // left-up
-				"9901", // up
-				"9902", // up-right
+				"9901",  // up
+				"9902",  // up-right
 			},
 		},
 		{
@@ -155,9 +155,9 @@ func TestCreateGrid_100X100Nodes(t *testing.T) {
 			connectedNode: "10000",
 			expectedConnections: []string{
 				"9901", // right
-				"1", // right-down
-				"100", // down
-				"99", // left-down
+				"1",    // right-down
+				"100",  // down
+				"99",   // left-down
 				"9999", // left
 				"9899", // left-up
 				"9900", // up
@@ -181,7 +181,7 @@ func createGrid(rows, columns int) *Graph {
 	g := New()
 
 	// add nodes
-	totalNumberOfNodes := rows*columns
+	totalNumberOfNodes := rows * columns
 	for i := 1; i <= totalNumberOfNodes; i++ {
 		g.Add(strconv.Itoa(i))
 	}
@@ -207,14 +207,14 @@ func createGrid(rows, columns int) *Graph {
 }
 
 func getRight(nodePos, columns int) int {
-	if nodePos% columns == 0 {
+	if nodePos%columns == 0 {
 		return nodePos - (columns - 1)
 	}
 	return nodePos + 1
 }
 
 func getLeft(nodePos, columns int) int {
-	if nodePos% columns == 1 {
+	if nodePos%columns == 1 {
 		return nodePos + (columns - 1)
 	}
 	return nodePos - 1
@@ -231,14 +231,15 @@ func getDown(nodePos, rows, columns int) int {
 func BenchmarkShortestPathWithHeuristic_100X100GridOfNodes(b *testing.B) {
 	rows, columns := 100, 100
 	grid := createGrid(rows, columns)
-	randomNodes := createLongListOfRandomKeyNodes(rows * columns, 100000)
+	randomNodes := createLongListOfRandomKeyNodes(rows*columns, 10000)
 
 	b.ResetTimer()
 
 	for i := 0; i < b.N; i++ {
-		_, ok := grid.ShortestPathWithHeuristic(randomNodes[i].fromNode, randomNodes[i].toNode, heuristicFor100X100Grid)
+		j := i % len(randomNodes)
+		_, ok := grid.ShortestPathWithHeuristic(randomNodes[j].fromNode, randomNodes[j].toNode, heuristicFor100X100Grid)
 		if !ok {
-			b.Fatal(`ok is false`, randomNodes[i])
+			b.Fatal(`ok is false`, randomNodes[j])
 		}
 	}
 }
@@ -250,9 +251,9 @@ type randFromTo struct {
 func createLongListOfRandomKeyNodes(totalNumberOfNodes, resultLength int) (res []randFromTo) {
 	rand.Seed(time.Now().UnixNano())
 
-	for i:=0; i < resultLength; i++ {
+	for i := 0; i < resultLength; i++ {
 		randRes := randFromTo{"0", "0"}
-		for ; randRes.fromNode == "0" || randRes.toNode == "0" ; {
+		for randRes.fromNode == "0" || randRes.toNode == "0" {
 			randRes = randFromTo{
 				fromNode: strconv.Itoa(rand.Intn(totalNumberOfNodes)),
 				toNode:   strconv.Itoa(rand.Intn(totalNumberOfNodes)),
@@ -268,7 +269,7 @@ func createLongListOfRandomKeyNodes(totalNumberOfNodes, resultLength int) (res [
 func TestHeuristicCalculationFor100X100Grid(t *testing.T) {
 	expected := []struct {
 		startNode, endNode string
-		distance int
+		distance           int
 	}{
 		{
 			startNode: "0",
@@ -332,22 +333,17 @@ func heuristicFor100X100Grid(startKey, endKey string) int {
 	startPos, _ := strconv.Atoi(startKey)
 	endPos, _ := strconv.Atoi(endKey)
 
-	rowsDiff := calculateDiff((startPos / rows) - (endPos / rows), cols)
-	colsDiff := calculateDiff((startPos % cols) - (endPos % cols), cols)
+	rowsDiff := calculateDiff((startPos / rows), (endPos / rows), cols)
+	colsDiff := calculateDiff((startPos % cols), (endPos % cols), cols)
 
-	var distanceToEndNode int
-	for ; rowsDiff > 0 || colsDiff > 0; {
-		// both diff's get reduced by one to simulate a diagonal step
-		rowsDiff--
-		colsDiff--
-
-		distanceToEndNode++
+	if rowsDiff > colsDiff {
+		return rowsDiff
 	}
-
-	return distanceToEndNode
+	return colsDiff
 }
 
-func calculateDiff(diff int, size int) int {
+func calculateDiff(a, b, size int) int {
+	diff := a - b
 	if diff < 0 {
 		diff = -diff
 	}
