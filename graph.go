@@ -51,7 +51,7 @@ func (g *Graph) Delete(key string) bool {
 	}
 
 	// iterate over neighbors, remove edges from neighboring nodes
-	for neighbor, _ := range n.neighbors {
+	for neighbor := range n.neighbors {
 		// delete edge to the to-be-deleted node
 		neighbor.Lock()
 		delete(neighbor.neighbors, n)

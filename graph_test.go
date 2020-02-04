@@ -1,7 +1,6 @@
 package graph
 
 import (
-	"fmt"
 	"testing"
 )
 
@@ -113,14 +112,14 @@ func TestDelete(t *testing.T) {
 
 	// test for orphaned connections
 	neighbors := g.get("2").GetNeighbors()
-	for n, _ := range neighbors {
+	for n := range neighbors {
 		if n == one {
 			t.Fail()
 		}
 	}
 
 	neighbors = g.get("3").GetNeighbors()
-	for n, _ := range neighbors {
+	for n := range neighbors {
 		if n == one {
 			t.Fail()
 		}
@@ -144,13 +143,4 @@ func ExampleGraph() {
 
 	// delete a node, and all connections to it
 	g.Delete("1")
-}
-
-func printNodes(nodes map[string]*Node) {
-	for _, n := range nodes {
-		fmt.Printf("%v\n", n.key)
-		for neighbor, _ := range n.neighbors {
-			fmt.Printf("  → %v\n", neighbor.key)
-		}
-	}
 }
